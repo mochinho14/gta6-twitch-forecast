@@ -17,10 +17,10 @@ rolling-midnight unlock pattern, the same console-only / PC platform split,
 a similar hour-1 scale (log-distance kernel), and a small penalty for
 early-access-contaminated curves and for "cold" fixed-time unlocks (hour 1
 near zero) when the case itself is a rolling console launch. The pooled
-quantiles are narrowed by a spread factor of 0.75 around the median; both
+quantiles are narrowed by a spread factor of 0.70 around the median; both
 the weights and the factor were chosen by leave-one-out validation over the
 comparables pool (each comparable forecast from the others), where this
-model's mean pinball loss on the log scale is about 0.40 against about 0.93
+model's mean pinball loss on the log scale is about 0.39 against about 0.93
 for the persistence baseline below (console-only subset: about 0.19 against
 about 0.32).
 
@@ -54,11 +54,11 @@ BASE_SIGMA = 0.15
 
 # Calibration, chosen by leave-one-out validation over the comparables pool.
 SCALE_S = 1.0    # log-distance kernel width for the hour-1 scale weight
-ROLL_F = 2.0     # weight multiplier when the unlock pattern matches
-CONS_F = 2.0     # weight multiplier when the platform split matches
+ROLL_F = 2.5     # weight multiplier when the unlock pattern matches
+CONS_F = 4.0     # weight multiplier when the platform split matches
 COLD_F = 0.25    # weight multiplier for cold fixed-unlock curves (see below)
 COLD_HOT = 0.02  # hour-1 / day-peak below this marks a cold unlock curve
-SPREAD = 0.75    # pooled-quantile narrowing around the median, in log space
+SPREAD = 0.70    # pooled-quantile narrowing around the median, in log space
 
 
 def parse_ts(ts):

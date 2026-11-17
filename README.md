@@ -34,12 +34,12 @@ q_tau(h) = p1 * exp(quantile_tau({lr_c(h)}))
 ```
 
 Weights reward comparables that resemble the case's launch (the case profile
-is read from its notes): matching rolling-midnight unlock pattern (x2),
-matching console-only vs PC platform split (x2), a log-distance kernel on the
+is read from its notes): matching rolling-midnight unlock pattern (x2.5),
+matching console-only vs PC platform split (x4), a log-distance kernel on the
 hour-1 scale (`exp(-|ln(v1_c / p1)|)`), and a x0.25 penalty on "cold"
 fixed-time unlocks (hour 1 below 2% of their day peak) when the case is a
 rolling console launch. The pooled quantiles are narrowed by a spread factor
-of 0.75 around the median. If a case has no usable comparable, the program
+of 0.70 around the median. If a case has no usable comparable, the program
 falls back to the persistence shape (flat at hour 1, log spread
 `0.15 * sqrt(h - 1)`).
 
@@ -52,7 +52,7 @@ loss on the log scale.
 | model | LOO loss (all 37) | LOO loss (8 console-only) |
 | --- | --- | --- |
 | persistence baseline | 0.930 | 0.323 |
-| this model | 0.397 | 0.192 |
+| this model | 0.390 | 0.189 |
 
 The weights and the spread factor sit in the middle of the flat region of
 the validation surface, not on a spike. (These are validation numbers on

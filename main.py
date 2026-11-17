@@ -17,12 +17,16 @@ rolling-midnight unlock pattern, the same console-only / PC platform split,
 a similar hour-1 scale (log-distance kernel), and a small penalty for
 early-access-contaminated curves and for "cold" fixed-time unlocks (hour 1
 near zero) when the case itself is a rolling console launch. The pooled
-quantiles are narrowed by a spread factor of 0.70 around the median; both
-the weights and the factor were chosen by leave-one-out validation over the
-comparables pool (each comparable forecast from the others), where this
-model's mean pinball loss on the log scale is about 0.39 against about 0.93
-for the persistence baseline below (console-only subset: about 0.19 against
-about 0.32).
+quantiles are narrowed by a spread factor of 0.70 around the median, and
+the two outer quantiles (5% and 95%) get an extra additive pad of 0.07 in
+log space on top of that: a second leave-one-out pass over the pool showed
+the narrowed tails were too sharp (90% intervals covered only about 81% of
+realised hours), and the pad lifts coverage to about 85% while slightly
+lowering the loss. Both the weights and the calibration were chosen by
+leave-one-out validation over the comparables pool (each comparable
+forecast from the others), where this model's mean pinball loss on the log
+scale is about 0.39 against about 0.93 for the persistence baseline below
+(console-only subset: about 0.19 against about 0.32).
 
 Fallback: if a case carries no usable comparable, the forecast is the house
 persistence shape: every hour stays at hour 1's print with a log spread of
@@ -59,6 +63,7 @@ CONS_F = 4.0     # weight multiplier when the platform split matches
 COLD_F = 0.25    # weight multiplier for cold fixed-unlock curves (see below)
 COLD_HOT = 0.02  # hour-1 / day-peak below this marks a cold unlock curve
 SPREAD = 0.70    # pooled-quantile narrowing around the median, in log space
+TAIL_PAD = 0.07  # extra additive widening of the 5%/95% quantiles, log space
 
 
 def parse_ts(ts):
@@ -186,8 +191,13 @@ def forecast_case(case, name):
         qs = [weighted_quantile(pairs, tau) for tau in LEVELS]
         med = qs[2]
         vals = []
-        for q in qs:
-            v = p1 * math.exp(med + (q - med) * SPREAD)
+        for i, q in enumerate(qs):
+            dev = (q - med) * SPREAD
+            if i == 0:  # outer quantiles get an additive pad on top of the
+                dev -= TAIL_PAD  # narrowed deviation: the pooled tails proved
+            elif i == len(qs) - 1:  # too sharp for the biggest launches
+                dev += TAIL_PAD
+            v = p1 * math.exp(med + dev)
             vals.append(round2(min(max(v, 0.01), 1e9)))
         for i in range(1, len(vals)):  # keep the row non-decreasing
             if vals[i] < vals[i - 1]:

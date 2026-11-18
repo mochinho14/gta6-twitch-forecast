@@ -65,7 +65,7 @@ ROLL_F = 2.5     # weight multiplier when the unlock pattern matches
 CONS_F = 4.0     # weight multiplier when the platform split matches
 COLD_F = 0.25    # weight multiplier for cold fixed-unlock curves (see below)
 COLD_HOT = 0.02  # hour-1 / day-peak below this marks a cold unlock curve
-SPREAD = 0.70    # pooled-quantile narrowing around the median, in log space
+SPREAD = 0.75    # pooled-quantile narrowing around the median, in log space
 TAIL_PAD = 0.07  # extra additive widening of the 5%/95% quantiles, log space
 
 # Extra donor pool, embedded in the entry: three big late-2025 launches
